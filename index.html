@@ -1,0 +1,205 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-detector.js"></script>
+        <script src="https://raw.githack.com/AR-js-org/studio-backend/master/src/modules/marker/tools/gesture-handler.js"></script>
+
+        <!-- to load transparented gifs -->
+        <script src="https://rawgit.com/mayognaise/aframe-gif-shader/master/dist/aframe-gif-shader.min.js"></script>
+        <!--
+        <script src="dist/aframe-gif-shader-for-transparent.min.js"></script>
+        <script src="https://rawgit.com/mayognaise/aframe-gif-component/master/dist/aframe-gif-component.min.js"></script>
+        -->
+        <!-- jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    </head>
+
+    <body style="margin: 0; overflow: hidden;">
+        <a-scene
+            vr-mode-ui="enabled: false;"
+            loading-screen="enabled: false;"
+            arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+            id="scene"
+            embedded
+            gesture-detector
+        >
+
+
+
+
+            <!-- 当たりパターン -->
+
+            <a-marker
+                type="pattern"
+                preset="custom"
+                url="assets/pattern-atari-00-w.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+            >
+                <a-entity 
+                    geometry="primitive:plane;"
+                    rotation="-90 0 0"
+                    material="shader:gif;src:url(assets/mimi_atari_word.gif);opacity:1"></a-entity>
+            </a-marker>
+
+            <!-- 当たりパターンおわり -->
+
+
+            <a-marker
+                type="pattern"
+                preset="custom"
+                url="assets/pattern-hazure-normal-notsymmetric.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+            >
+                <a-entity 
+                    geometry="primitive:plane;"
+                    rotation="-90 0 0"
+                    material="shader:gif;src:url(assets/mimi_normal_word.gif);opacity:1"></a-entity>
+            </a-marker>
+
+            <a-marker
+                type="pattern"
+                preset="custom"
+                url="assets/pattern-hazure-gaburi-w.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+            >
+                <a-entity 
+                    geometry="primitive:plane;"
+                    rotation="-90 0 0"
+                    material="shader:gif;src:url(assets/mimi_gabu_word.gif);opacity:1"></a-entity>
+            </a-marker>
+
+            <a-marker
+                type="pattern"
+                preset="custom"
+                url="assets/pattern-hazure-heart-w.patt"
+                raycaster="objects: .clickable"
+                emitevents="true"
+                cursor="fuse: false; rayOrigin: mouse;"
+            >
+                <a-entity 
+                    geometry="primitive:plane;"
+                    rotation="-90 0 0"
+                    material="shader:gif;src:url(assets/mimi_heart_word.gif);opacity:1"></a-entity>
+            </a-marker>
+
+
+
+
+
+
+
+
+            <a-entity camera></a-entity>
+        </a-scene>
+
+        <div class="font_preload" style="display:none;">
+            <span style="font-family: 'MaruMinya';"></span>
+        </div>
+
+        <div id="HeadText" style="visibility:visible;">
+            <img src="./assets/tansaku_ver2.gif">
+        </div>
+        <div class="marker-frame-wrapper" id="marker_frame_wrapper">
+        </div>
+
+    </body>
+
+    <script>
+        setTimeout(function() {
+            $('#marker_frame_wrapper').fadeOut('fast');
+        }, 5000); // <-- time in milliseconds
+        
+        let m = document.querySelectorAll("a-marker");
+        let player = document.getElementById("HeadText");
+        let img = player.getElementsByTagName('img')[0];
+
+        m.forEach((marker) => {
+            marker.addEventListener("markerFound", (e)=>{
+                //console.log("found")
+                let entity = marker.getElementsByTagName('a-entity')[0];
+                let material_org = entity.getAttribute('material');
+                entity.setAttribute('material', material_org);
+                img.src = './assets/hakken_ver2.gif';
+                //player.style.left=0;
+            })
+            marker.addEventListener("markerLost", (e)=>{
+                //console.log("lost");
+                //document.getElementById("HeadText").style.visibility = "visible";
+                img.src = './assets/tansaku_ver2.gif';
+                //player.style.left='';
+            })
+        });
+    </script>
+
+    <style>
+        #HeadText {
+            position: absolute;
+            /*  中央表示用
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            */
+            left:0;
+            bottom:0;
+            right:0;
+            margin: auto;
+            z-index: 10000;
+            width: fit-content;
+            height: fit-content;
+        }
+        #HeadText img {
+            width:256px;
+        }
+
+        @font-face {
+            font-family: 'MaruMinya';
+            src: url('./assets/x12y12pxMaruMinya.ttf');
+        }
+        .msg-wrapper {
+            position: absolute;
+            display:flex;
+            flex-direction:column;
+            top:3%;
+            left:0;
+            width:90%;
+            padding:32px 16px;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+            z-index:1;
+        }
+        .msg-wrapper p {
+            margin:auto;
+            font-family:'MaruMinya';
+        }
+        .marker-frame-wrapper {
+            position:absolute;
+            top:25%;
+            left:0;
+            right:0;
+            margin:auto;
+            text-align:center;
+            @media all and (orientation:landscape) {
+                top:15%;
+            }
+        }
+        .marker-frame-wrapper img {
+            width:80vw;
+            opacity:0.5;
+            @media all and (orientation:landscape) {
+                width:auto;
+                height:80vh;
+            }
+        }
+
+    </style>
+</html>
